@@ -21,7 +21,7 @@ The aim of this project is to explore the dataset and build a ML model capable o
 6. [Model Training](#model-training)
 7. [Model Metrics](#model-metrics)
 8. [API](#api)
-9. [Improvements & Next Steps](#pimprovements--next-steps)
+9. [Improvements & Next Steps](#improvements--next-steps)
 
 ## Dataset Description
 
