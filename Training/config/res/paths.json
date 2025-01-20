@@ -1,0 +1,5 @@
+{
+    "model_output_dir" : "model/models",
+    "data_route" : "data/clean_data.parquet",
+    "embeddings_route" : "data/clean_data_embeddings.npz"
+}

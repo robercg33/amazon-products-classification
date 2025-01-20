@@ -1,0 +1,8 @@
+{
+    "seed" : 12345,
+    "solver" : "lbfgs",
+    "max_iter" : 3000,
+    "model_name" : "log_reg",
+    "multi_class" : "ovr",
+    "class_weight" : "balanced"
+}

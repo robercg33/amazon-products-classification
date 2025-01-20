@@ -1,0 +1,10 @@
+torch
+loguru
+numpy
+pandas
+tqdm
+transformers
+boto3
+fastparquet
+pyarrow
+python-dotenv

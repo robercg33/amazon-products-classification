@@ -1,0 +1,19 @@
+{
+    "encoders_path" : "src/models",
+    "encoders_filename" : "encoders_not_balanced.pkl",
+    "text_to_embed" : ["description", "title", "features"],
+    "numeric" : ["num_features", "len_title", "len_description"],
+    "numeric_log" : ["num_features", "len_title", "len_description"],
+    "categ" : ["num_also_buy_cat", "num_also_view_cat", "num_images_cat"],
+    "embed" : ["description_emb", "title_emb", "features_emb"],
+    "features_mapping": {
+        "num_also_buy": {"0": "0", "1": "1", "2": "2", "3": "3", "4": "4", "5": "5"}, 
+        "num_also_view": {"0": "0", "1": "1", "2": "2", "3": "3", "4": "4", "5": "5"}, 
+        "num_images": {"0": "0", "1": "1", "2": "2", "3": "3", "4": "4", "5": "5"}
+    },
+    "embed_config" : {
+        "max_length": 256,
+        "padding": true,
+        "truncation": true
+    }
+}

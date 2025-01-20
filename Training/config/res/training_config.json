@@ -1,0 +1,9 @@
+{
+    "data_seed" : 12345,
+    "numeric" : ["num_features", "len_title", "len_description"],
+    "numeric_log" : ["num_features", "len_title", "len_description"],
+    "categ" : ["num_also_buy_cat", "num_also_view_cat", "num_images_cat"],
+    "embed" : ["description_emb", "title_emb", "features_emb"],
+    "target" : "main_cat",
+    "test_size" : 0.3
+}
