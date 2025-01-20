@@ -21,7 +21,7 @@ The aim of this project is to explore the dataset and build a ML model capable o
 6. [Model Training](#model-training)
 7. [Model Metrics](#model-metrics)
 8. [API](#api)
-9. [Improvements & Next Steps](#pimprovements-&-next-steps)
+9. [Improvements & Next Steps](#pimprovements--next-steps)
 
 ## Dataset Description
 
@@ -97,11 +97,13 @@ def parse(path):
 ```
 
 ## EDA and Cleaning
-In this part, I briefly explain the EDA performed and the decided cleaning steps and features selection for the model.
+In this part briefly explains the EDA performed and the decided cleaning steps and features selection for the model.
+
+A more detailed exploration and explanation, with the used code can be found on the [EDA notebook](./Notebooks/eda_cleaning.ipynb) used
 
 ### Non-text features
 
-The following "non-text" fields were provided:
+The following non-text fields were provided:
 
 - `also_buy` (**USED**): Not directly useful, converted into a variable indicating the length of the list.
 - `also_view` (**USED**): Same as the previous one, converted to a new feature indicating the length of the list.
@@ -118,9 +120,9 @@ The following text fields were given:
 - `features` (**USED**): List of strings containing features of the product. **Joined into a single string**.
 - `title` (**USED**): String representing the product title.
 
-After analyzing, I create a **cleaning text function**, that does the following:
+After analyzing, we create a **cleaning text function**, that does the following:
 
-1. Remove HTML tags. This is because I saw a lot of text containing them, and are not useful for the purpose of the exercise.
+1. Remove HTML tags. This is because we saw a lot of text containing them, and they just add noise to our text features.
 2. Remove non-printable characters.
 3. Remove excessive whitespace.
 4. Remove special symbol, keeping only letters, digits and regular punctuation symbols.
@@ -168,7 +170,7 @@ The actual features that will be used for the model, derived from the original c
 - `num_images_cat`: length of "image" list, *categorized into representative bins*.
 - `len_title`: length of the *cleaned* `title`.
 - `len_description`: length of the *cleaned and joined* `description`.
-- `num_features`: length of the LIST indicated in the input variable `feature`. Instead of using the length of the features joined string, I used this as each element on the list is supposed to indicate a feature of the product. As I already had this new feature created, I didn't create `len_features` as both variables would be highly correlated.
+- `num_features`: length of the LIST indicated in the input variable `feature`. Instead of using the length of the features joined string, we used this as each element on the list is supposed to indicate a feature of the product. As we already had this new feature created, we didn't create `len_features` as both variables would be highly correlated.
 
 ### Embeddings features
 
@@ -194,7 +196,9 @@ Each of the text features [`title`, `description`, `features`] will have its own
 
 Next step is to create a cleaned and ready-to-use dataset from the input data following the directories specified on [1](#eda-and-cleaning) and [2](#feature-engineering).
 
-The ideal scenario would be to implement the data collecting and preprocessing steps in the same module as the training step, but as I need to generate embeddings from the texts, it would take too long to do that in a machine without a GPU, so I decided to separate the data preparation in another module to run in a cloud machine with GPU, just with the purpose of speeding up the embedding generation.
+The ideal scenario would be to implement the data collecting and preprocessing steps in the same module as the training step, but as we need to generate embeddings from the texts, it would take too long to do that in a machine without a GPU.
+
+So for the sake of ease, we can separate the data preparation in another module to run in a cloud machine with GPU, just with the purpose of speeding up the embedding generation.
 
 The code is located in the [Clean](/Clean/) module, and it performs the following:
 
@@ -203,17 +207,17 @@ The code is located in the [Clean](/Clean/) module, and it performs the followin
 3. Generate embeddings using a distil-BERT model for each text feature.
 4. Stores the cleaned and generated features in a dataframe in parquet format and the embeddings in a `.npz` file (numpy compressed file). The module writes the outputs to an AWS S3 bucket. **This is done to facilitate data retrieval from the cloud machine**
 
-The cloud machine used was hosted by [vastai](https://vast.ai/), as I am already familiarized with this environment. They offer super cheap GPU cloud machines.
+The cloud machine used was hosted by [vastai](https://vast.ai/), as they offer super cheap GPU cloud machines.
 
 ## Model Selection
 
-For selecting the model, I tried different models with a very tiny fraction of the provided dataset. The tests and training are sketched in this [notebook](/Notebooks/metrics.ipynb). The models I tried were:
+For selecting the model, different models were tried on a fraction of the dataset. The tests and training are sketched in this [notebook](/Notebooks/metrics.ipynb). The models tried were:
 
 - Logistic Regression
 - XGBoost
 - Neural Network
 
-The three of them seemed to perform similar, so I opted for the **Logistic Regression** for the following reasons:
+The three of them seemed to perform similar, so we opt for the **Logistic Regression** for the following reasons:
 
 1. Resources: A logistic regression takes very little resources to train and deploy, and do not need a GPU for faster training/inference, like a NN would.
 2. Simplicity: Is a very simple model, if needed, we could interpret the coefficients of each variable to understand how they relate to the target (this would be more difficult with the embeddings, but can be done with the rest of variables).
@@ -223,7 +227,7 @@ The three of them seemed to perform similar, so I opted for the **Logistic Regre
 
 The model training module, located on [Training](/Training/), just takes the clean data and the embeddings generated with the [Clean](/Clean/) module, and trains a logistic regression, with the parameters and configuration specified in the config files ([model](/Training/config/res/model_config.json) & [train](/Training/config/res/training_config.json)).
 
-The data is already included in the [/data](/Training/data/) path, containig a parquet file with 124842 records cleaned from the original provided dataset and its embeddings in a `.npz` file.
+The data is already included in the [/data](/Training/data/) path (a small sample of already preprocess data), containig a `.parquet` file with some records cleaned from the original provided dataset and its embeddings in a `.npz` file.
 
 - The model outputs (at [/model/models](/Training/model/models/)) several things:
     - *modelname_modelversion.pkl*: Pickle file named after the model name and version specified on the config file, containing the trained model.
@@ -235,14 +239,14 @@ For running, just building the docker image and running it would be sufficient:
 
 `docker build -t <image-name> <module_path>`
 
-And for running the image, I a simple docker run command should be sufficient, mounting the output folder from the container into a local folder for storing the output:
+And for running the image, a simple docker run command should be sufficient, mounting the output folder from the container into a local folder for storing the output:
 
 `docker run -v "<local_path>:/app/model/models" <image-name>`
 
 
 ## Model Metrics
 
-I trained two Logistic Regression models on the dataset:
+Two Logistic Regression models where trained on the dataset:
 
 - One targeting the class imbalance
 - Another without taking that into account
@@ -264,7 +268,7 @@ For the API architecture, the following schema was used:
     - services: Services that manage the API logic (inference of the LR model in this case)
 - test (*not implemented*): Here, the unit and integration tests for the API would be placed.
 
-The dockerfile exposes the API on the port 5000 of the container. For deploying the API in a localhost, it is only necessary to build the image:
+The dockerfile exposes the API on the port 5000 (default *flask* port) of the container. For deploying the API in a localhost, it is only necessary to build the image:
 
 `docker build -t <image-name> <module_path>`
 
@@ -301,7 +305,7 @@ As the following example:
 
 ## Improvements & Next Steps
 
-This project has been built in very little time, so there is a lot of room for improvement. Some next steps could be:
+This project has lot of room for improvement. Some next steps could be:
 
 - **Try other models** and other approaches, like **finetuning a language model directly for the classification problem**.
 - **Try more hyperparameter tunning**
